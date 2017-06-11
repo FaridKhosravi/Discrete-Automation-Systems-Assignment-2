@@ -1,0 +1,343 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.12">
+  <POU Name="MAIN" Id="{08d49ae5-8ebb-423c-be08-68ef9cc71c86}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	L1: BOOL;   //lock sesnsor1
+	L2: BOOL;   //lock sesnsor2
+	L3: BOOL;   //lock sesnsor3
+	S1: BOOL;   //stopper1 
+	S2: BOOL;   //stopper2
+	S3: BOOL;   //stopper3
+	BA1: BOOL;  //board available1
+	BA2: BOOL;  //board available2
+	BA3: BOOL;  //board available3
+	P1: BOOL;   //presence sesnsor1
+	P2: BOOL;   //presence sesnsor2
+	P3: BOOL;   //presence sesnsor3
+	T1: TON;    //timer for work station1
+	T2: TON;    //timer for work station2
+	T3: TON;    //timer for work station3
+	COUNT_IN: INT;  //number of imported pallets 
+	COUNT_OUT: INT;  //number of exported pallets
+	PALLETI: ARRAY [1..10] OF ST_PALLET; //each index of this array use for one pallet
+	PALLETV: ARRAY[1..10] OF ST_PALLET;  //for saving data of palleti array
+	I: INT:=0;  //variable of for loop
+	INPUT_PALLET: BOOL; //button for importing pallet to conveyor
+	INPUT_PALLET_Pressed: BOOL; // these 3 input pallet used for counting input pallet button just one time in several cycle
+	INPUT_PALLET_Released: BOOL;  //
+	INPUT_PALLET_PressedBefore: BOOL;  //
+	StartStop: BOOL;  //using for start and stop system
+	MOTOR: BOOL; //motor of conveyor
+	RESET_OUTV1: BOOL;  //exit pallet1 from system
+	RESET_OUTV2: BOOL;  //exit pallet2 from system
+	RESET_OUTV3: BOOL;  //exit pallet3 from system
+	RESET_OUTV4: BOOL;  //exit pallet4 from system
+	RESET_OUTV5: BOOL;  //exit pallet5 from system
+	RESET_OUTV6: BOOL;  //exit pallet6 from system
+	RESET_OUTV7: BOOL;  //exit pallet7 from system
+	RESET_OUTV8: BOOL;  //exit pallet8 from system
+	RESET_OUTV9: BOOL;  //exit pallet9 from system
+	RESET_OUTV10: BOOL;  //exit pallet10 from system
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[T1(IN:=L1,PT:=T#5S);
+T2(IN:=L2,PT:=T#5S);
+T3(IN:=L3,PT:=T#5S);
+
+IF INPUT_PALLET_Pressed THEN
+	INPUT_PALLET_PressedBefore := TRUE;
+ELSIF INPUT_PALLET_Pressed = FALSE AND INPUT_PALLET_PressedBefore THEN
+	INPUT_PALLET := TRUE;
+	INPUT_PALLET_PressedBefore := FALSE;
+END_IF
+
+//START AND INSERT PALLET TO THE SYSTEM AND FOR LOOP IS FOR PREVENTING PROGRAM FROM OVERWRITING DATA OF PALLETS ON PREVIOUS ARRAY INDEXES
+	IF StartStop THEN
+		MOTOR:=TRUE;
+		IF INPUT_PALLET AND (COUNT_IN-COUNT_OUT)<11 THEN
+		COUNT_IN:=COUNT_IN +1;
+		FOR I:= 1 TO 10 DO
+			IF PALLETI[I].STATE = -1 THEN
+				PALLETI[I].STATE := 0;
+				EXIT;
+			END_IF
+		END_FOR
+		INPUT_PALLET := FALSE;
+	END_IF
+	
+	
+	//RESETING OUTPUT MEMORY FOR EACH PALLET
+	IF RESET_OUTV1 THEN
+			PALLETV[1].WS1:=FALSE;
+			PALLETV[1].WS2:=FALSE;
+			PALLETV[1].WS3:=FALSE;
+			PALLETV[1].STATE:=0;
+		END_IF
+		IF RESET_OUTV2 THEN
+			PALLETV[2].WS1:=FALSE;
+			PALLETV[2].WS2:=FALSE;
+			PALLETV[2].WS3:=FALSE;
+			PALLETV[2].STATE:=0;
+		END_IF
+		IF RESET_OUTV3 THEN
+			PALLETV[3].WS1:=FALSE;
+			PALLETV[3].WS2:=FALSE;
+			PALLETV[3].WS3:=FALSE;
+			PALLETV[3].STATE:=0;
+		END_IF
+		IF RESET_OUTV4 THEN
+			PALLETV[4].WS1:=FALSE;
+			PALLETV[4].WS2:=FALSE;
+			PALLETV[4].WS3:=FALSE;
+			PALLETV[4].STATE:=0;
+		END_IF
+		IF RESET_OUTV5 THEN
+			PALLETV[5].WS1:=FALSE;
+			PALLETV[5].WS2:=FALSE;
+			PALLETV[5].WS3:=FALSE;
+			PALLETV[5].STATE:=0;
+		END_IF
+		IF RESET_OUTV6 THEN
+			PALLETV[6].WS1:=FALSE;
+			PALLETV[6].WS2:=FALSE;
+			PALLETV[6].WS3:=FALSE;
+			PALLETV[6].STATE:=0;
+		END_IF
+		IF RESET_OUTV7 THEN
+			PALLETV[7].WS1:=FALSE;
+			PALLETV[7].WS2:=FALSE;
+			PALLETV[7].WS3:=FALSE;
+			PALLETV[7].STATE:=0;
+		END_IF
+		IF RESET_OUTV8 THEN
+			PALLETV[8].WS1:=FALSE;
+			PALLETV[8].WS2:=FALSE;
+			PALLETV[8].WS3:=FALSE;
+			PALLETV[8].STATE:=0;
+		END_IF
+		IF RESET_OUTV9 THEN
+			PALLETV[9].WS1:=FALSE;
+			PALLETV[9].WS2:=FALSE;
+			PALLETV[9].WS3:=FALSE;
+			PALLETV[9].STATE:=0;
+		END_IF
+		IF RESET_OUTV10 THEN
+			PALLETV[10].WS1:=FALSE;
+			PALLETV[10].WS2:=FALSE;
+			PALLETV[10].WS3:=FALSE;
+			PALLETV[10].STATE:=0;
+		END_IF
+		
+//MAIN FOR LOOP FOR WORKING ON PALLETS		
+	FOR I:=1 TO 10 DO
+		CASE PALLETI[I].STATE OF        //CHECKING DIFFERENT STATES FOR EACH PALLET
+		   -1:
+				CONTINUE;
+			0:
+			IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+			END_IF	
+			IF NOT L1 AND NOT L2 AND NOT L3 THEN
+				IF NOT PALLETI[I].WS1 THEN
+				PALLETI[I].STATE:=1;
+				ELSIF NOT PALLETI[I].WS2 THEN
+					PALLETI[I].STATE:=4;
+				ELSIF NOT PALLETI[I].WS3 THEN
+					PALLETI[I].STATE:=7;
+				END_IF
+			ELSIF L1 AND NOT L2 AND NOT L3 THEN
+				IF NOT PALLETI[I].WS2 THEN
+				PALLETI[I].STATE:=4;
+				ELSIF NOT PALLETI[I].WS3 THEN
+					PALLETI[I].STATE:=7;
+				END_IF
+			ELSIF L1 AND NOT L2 AND L3 THEN
+				IF NOT PALLETI[I].WS2 THEN
+				PALLETI[I].STATE:=4;
+				END_IF
+			ELSIF L1 AND L2 AND NOT L3 THEN
+				IF NOT PALLETI[I].WS3 THEN
+				PALLETI[I].STATE:=7;
+				END_IF
+			ELSIF NOT L1 AND L2 AND L3 THEN
+				IF NOT PALLETI[I].WS1 THEN
+				PALLETI[I].STATE:=1;
+				END_IF
+			ELSIF NOT L1 AND L2 AND NOT L3 THEN
+				IF NOT PALLETI[I].WS3 THEN
+				PALLETI[I].STATE:=7;
+				END_IF
+			ELSIF NOT L1 AND NOT L2 AND L3 THEN
+				IF NOT PALLETI[I].WS1 THEN
+					PALLETI[I].STATE:=1;
+				ELSIF NOT PALLETI[I].WS2 THEN
+					PALLETI[I].STATE:=4;
+				END_IF
+			END_IF
+		
+			1:  //WORK STATION1 WORKS ON PALLET UP TO STATE3
+			IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+			ELSIF NOT PALLETI[I].WS1 THEN
+				IF NOT L1 AND P1 THEN
+				BA1:=TRUE;
+                S1:=TRUE;
+				PALLETI[I].STATE:=2;
+			    END_IF
+			END_IF
+			
+			2:
+			IF L1 THEN
+				T1(IN:=L1,PT:=T#5S);
+			    BA1:=FALSE;
+			    S1:=FALSE;
+				IF T1.Q THEN
+					PALLETI[I].STATE:=3;
+				END_IF
+			END_IF
+			
+            3:
+			IF NOT L1 THEN
+				PALLETI[I].WS1:=1;
+				IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+				END_IF
+				PALLETI[I].STATE:=0;
+			END_IF
+
+			4:   //WORK STATION2 WORKS ON PALLET UP TO STATE7
+			IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+			ELSIF NOT PALLETI[I].WS2 THEN
+				IF NOT L2 AND P2 THEN
+				BA2:=TRUE;
+				S2:=TRUE;
+				PALLETI[I].STATE:=5;
+			    END_IF
+			END_IF
+			
+            5:
+			IF L2 THEN
+				BA2:=FALSE;
+			    S2:=FALSE;
+				IF T2.Q THEN
+					PALLETI[I].STATE:=6;
+			    END_IF
+			END_IF
+			
+			6:
+			IF NOT L2 THEN
+				PALLETI[I].WS2:=1;
+				IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+				END_IF
+				PALLETI[I].STATE:=0;
+			END_IF
+			
+			7:   //WORK STATION3 WORKS ON PALLET UP TO STATE9
+			IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+			ELSIF NOT PALLETI[I].WS3 THEN
+				IF NOT L3 AND P3 THEN
+				BA3:=TRUE;
+				S3:=TRUE;
+				PALLETI[I].STATE:=8;
+			    END_IF
+			END_IF
+			
+			8:
+			IF L3 THEN
+				BA3:=FALSE;
+			    S3:=FALSE;
+			    IF T3.Q THEN
+					PALLETI[I].STATE:=9;
+				END_IF
+			END_IF
+			
+			9:
+			IF NOT L3 THEN
+				PALLETI[I].WS3:=1;
+				IF PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+			    PALLETI[I].STATE:=10;
+				END_IF
+				PALLETI[I].STATE:=0;
+			END_IF
+			
+			10:    //TRANSFERING DATA OF PALLETI TO PALLETV AND RESET THE PALLET AND TURN IT BACK
+				
+				IF  PALLETI[I].WS1 AND PALLETI[I].WS2 AND PALLETI[I].WS3 THEN
+					PALLETV[I].WS1:=PALLETI[I].WS1;
+					PALLETV[I].WS2:=PALLETI[I].WS2;
+					PALLETV[I].WS3:=PALLETI[I].WS3;
+					PALLETV[I].STATE:=PALLETI[I].STATE;
+			
+				
+				END_IF
+				PALLETI[I].WS1:=FALSE;
+				PALLETI[I].WS2:=FALSE;
+				PALLETI[I].WS3:=FALSE;
+				PALLETI[I].STATE:=-1;
+				COUNT_OUT:=COUNT_OUT+1;
+		
+		END_CASE
+	END_FOR
+	ELSE 
+		MOTOR:=FALSE;
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="MAIN">
+      <LineId Id="349" Count="2" />
+      <LineId Id="946" Count="0" />
+      <LineId Id="950" Count="4" />
+      <LineId Id="949" Count="0" />
+      <LineId Id="359" Count="0" />
+      <LineId Id="362" Count="1" />
+      <LineId Id="1034" Count="1" />
+      <LineId Id="1057" Count="1" />
+      <LineId Id="1060" Count="0" />
+      <LineId Id="1062" Count="0" />
+      <LineId Id="1061" Count="0" />
+      <LineId Id="1059" Count="0" />
+      <LineId Id="1040" Count="0" />
+      <LineId Id="582" Count="0" />
+      <LineId Id="1422" Count="1" />
+      <LineId Id="1425" Count="0" />
+      <LineId Id="584" Count="0" />
+      <LineId Id="1320" Count="58" />
+      <LineId Id="1426" Count="1" />
+      <LineId Id="585" Count="2" />
+      <LineId Id="1056" Count="0" />
+      <LineId Id="588" Count="0" />
+      <LineId Id="1063" Count="2" />
+      <LineId Id="589" Count="2" />
+      <LineId Id="1068" Count="2" />
+      <LineId Id="1072" Count="0" />
+      <LineId Id="592" Count="3" />
+      <LineId Id="1066" Count="1" />
+      <LineId Id="596" Count="16" />
+      <LineId Id="931" Count="0" />
+      <LineId Id="933" Count="1" />
+      <LineId Id="936" Count="0" />
+      <LineId Id="938" Count="0" />
+      <LineId Id="935" Count="0" />
+      <LineId Id="613" Count="90" />
+      <LineId Id="813" Count="0" />
+      <LineId Id="704" Count="0" />
+      <LineId Id="812" Count="0" />
+      <LineId Id="1053" Count="2" />
+      <LineId Id="1052" Count="0" />
+      <LineId Id="929" Count="0" />
+      <LineId Id="978" Count="0" />
+      <LineId Id="709" Count="3" />
+      <LineId Id="979" Count="0" />
+      <LineId Id="1143" Count="0" />
+      <LineId Id="715" Count="3" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="453" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

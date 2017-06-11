@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4020.12">
+  <DUT Name="ST_PALLET" Id="{9da2ae7d-9c7a-40f6-bbb3-10cbd97860e7}">
+    <Declaration><![CDATA[TYPE ST_PALLET :
+STRUCT
+	WS1: BOOL;
+	WS2: BOOL;
+	WS3: BOOL;
+	STATE: INT := -1 ;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>
